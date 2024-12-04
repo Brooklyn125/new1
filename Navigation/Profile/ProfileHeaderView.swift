@@ -7,7 +7,7 @@
 import UIKit
 
 class ProfileHeaderView: UIView {
-
+    
     private let avatarImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 50
@@ -40,7 +40,13 @@ class ProfileHeaderView: UIView {
         textField.placeholder = "Set your status..."
         textField.font = UIFont.systemFont(ofSize: 14)
         textField.textColor = .black
-        textField.borderStyle = .roundedRect
+        textField.backgroundColor = .white
+        textField.borderStyle = .none
+        textField.layer.cornerRadius = 12
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = UIColor.lightGray.cgColor
+        textField.setLeftPaddingPoints(16)
+        textField.setRightPaddingPoints(16)
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -59,12 +65,19 @@ class ProfileHeaderView: UIView {
         return button
     }()
     
+    private let separator: UIView = {
+        let view = UIView()
+        view.backgroundColor = .lightGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
         setupActions()
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -76,6 +89,7 @@ class ProfileHeaderView: UIView {
         addSubview(fullNameLabel)
         addSubview(statusLabel)
         addSubview(statusTextField)
+        addSubview(separator)
         addSubview(setStatusButton)
         
         setupConstraints()
@@ -96,18 +110,23 @@ class ProfileHeaderView: UIView {
             statusLabel.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 16),
             statusLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             
-            statusTextField.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: 16),
-            statusTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            statusTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            statusTextField.heightAnchor.constraint(equalToConstant: 36),
+            statusTextField.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 16),
+            statusTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 132),
+            statusTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -32),
+            statusTextField.heightAnchor.constraint(equalToConstant: 40),
             
-            setStatusButton.topAnchor.constraint(equalTo: statusTextField.bottomAnchor, constant: 16),
+            separator.topAnchor.constraint(equalTo: statusTextField.bottomAnchor, constant: 8),
+            separator.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            separator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            separator.heightAnchor.constraint(equalToConstant: 0),
+            
+            setStatusButton.topAnchor.constraint(equalTo: separator.bottomAnchor, constant: 16),
             setStatusButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             setStatusButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             setStatusButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
-
+    
     private func setupActions() {
         setStatusButton.addTarget(self, action: #selector(setStatus), for: .touchUpInside)
     }
@@ -116,10 +135,23 @@ class ProfileHeaderView: UIView {
         statusLabel.text = statusTextField.text?.isEmpty == false ? statusTextField.text : "Waiting for something..."
         statusTextField.text = ""
     }
-
+    
     func configure(avatarImage: UIImage?, fullName: String, status: String) {
         avatarImageView.image = avatarImage
         fullNameLabel.text = fullName
         statusLabel.text = status
+    }
+}
+extension UITextField {
+    func setLeftPaddingPoints(_ amount: CGFloat) {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.height))
+        self.leftView = paddingView
+        self.leftViewMode = .always
+    }
+    
+    func setRightPaddingPoints(_ amount: CGFloat) {
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.height))
+        self.rightView = paddingView
+        self.rightViewMode = .always
     }
 }
